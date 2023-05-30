@@ -1,0 +1,150 @@
+import pymysql
+from tkinter import *
+from tkinter import ttk
+from tkinter import messagebox
+import tkinter as tk
+
+
+def connection():
+    conn = pymysql.connect(
+        host='localhost',
+        user='root',
+        password='',
+        db='students_db',
+    )
+    return conn
+
+
+def refreshTable():
+    for data in my_tree.get_children():
+        my_tree.delete(data)
+
+    for array in read():
+        my_tree.insert(parent='', index='end', iid=array, text="", values=(array), tag="orlow")
+
+    my_tree.tag_configure('orow', background='#EEEEEE', font=('Arial', 12))
+    my_tree.grid(row=8, column=5, columnspan=5, rowspawn=11, padx=10, pady=20)
+
+
+root = Tk()
+root.title("Student")
+root.geometry("1080x720")
+my_tree = ttk.Treeview(root)
+
+ph1 = tk.StringVar()
+ph2 = tk.StringVar()
+ph3 = tk.StringVar()
+ph4 = tk.StringVar()
+ph5 = tk.StringVar()
+
+
+def setph(word, num):
+    if num == 1:
+        ph1.set(word)
+    if num == 2:
+        ph2.set(word)
+    if num == 3:
+        ph3.set(word)
+    if num == 4:
+        ph4.set(word)
+    if num == 5:
+        ph5.set(word)
+
+
+def read():
+    conn = connection()
+    cursor = conn.cursor()
+    cursor.execute()
+    results = cursor.fetchall()
+    conn.commit()
+    conn.close()
+    return results
+
+def add():
+    studid = str(studidEntry.get())
+    fname = str(fnameEntry.get())
+    lname = str(lnameEntry.get())
+    adress = str(adressEntry.get())
+    phone = str(phoneEntry.get())
+    if (studid == "" or studid == " ") or (fname == "" or fname == " ") or (lname == "" or lname
+    == "") or (adress == "" or adress == " ") or (phone == "" or phone == " "):
+        messagebox.showinfo("Error")
+        return
+    else:
+        try:
+            conn = connection()
+            cursor = conn.cursor()
+            cursor.execute(
+                "INSERT INTO students VALUES"                        
+                "('" + studid + "','" + fname + "','" + lname + "','" + address + "','" + phone + "') ")
+            conn.comit()
+            conn.close()
+        except:
+            messagebox.showinfo("Error", "Stud ID already exist")
+        return
+
+    refreshTable()
+
+    def reset():
+        decision = messagebox.askquestion("Warning!!", "Delete all data?")
+
+    if decision != "yes":
+        return
+    else:
+        try:
+            conn = connection()
+            cursor = conn.cursor()
+            cursor.execute("DELETE FROM students")
+            conn.comit()
+            con.close()
+        except:
+            messagebox.showinfo("Error", "Sorry an error occured")
+            return
+
+    refreshTable()
+
+def delete():
+    decision = messagebox.askquestion("Warning!!", "Delete the selected data?")
+    if decision != "yes":
+        return
+    else:
+        selected_item = my_tree.selection()[0]
+        deleteData = str(my_tree.item(selected_item)['values'][0])
+        try:
+            conn = connection()
+            cursor = conn.cursor()
+            cursor.execute("DELETE FROM students WHERE STUDID='" + str(deleteData) + "'")
+            conn.comit()
+            conn.close()
+        except:
+            messagebox.showinfo("Error", "Sorry an error occured")
+            return
+
+
+refreshTable()
+
+
+def select():
+    try:
+        selected_item = my_tree.selection()[0]
+        studid = str(my_tree.item(selected_item)['values'][0])
+        studid = str(my_tree.item(selected_item)['values'][0])
+        studid = str(my_tree.item(selected_item)['values'][0])
+        studid = str(my_tree.item(selected_item)['values'][0])
+        studid = str(my_tree.item(selected_item)['values'][0])
+        setph(studid, 1)
+        setph(fname, 2)
+        setph(lname, 3)
+        setph(address, 4)
+        setph(phone, 5)
+    except:
+        messagebox.showinfo("Error", "Please select a data row")
+
+
+def search():
+    studid = str(studidEntry.get())
+    fname = str(fnameEntry.get())
+    lname = str(lnameEntry.get())
+    address = str(addressEntry.get())
+    phone = str(phoneEntry.get())
+    
